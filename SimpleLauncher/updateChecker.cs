@@ -12,15 +12,19 @@ namespace SimpleLauncher
 {
     class updateChecker
     {
+        xmlController xmlC = new xmlController();
         string downloadUrl = "";
         public string newDownloadUrl = "";
         public Version curVersion = null;
         public Version newVersion = null;
+        string newVerStr = "";
         string xmlUrl = "http://borgdude.github.io/update.xml";
 
+        //Checks local xml file
         public void checkLocalVersion()
         {
-            XmlTextReader reader = new XmlTextReader("C:/Users/Borgdude/Documents/Visual Studio 2013/Projects/SimpleLauncher/SimpleLauncher/test.xml");
+            XmlTextReader reader = new XmlTextReader("test.xml");
+            Console.WriteLine("Get local XML");
             reader.MoveToContent();
             string elementName = "";
             if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
@@ -39,6 +43,7 @@ namespace SimpleLauncher
                             {
                                 case "version":
                                     curVersion = new Version(reader.Value);
+                                    Console.WriteLine("curVersion: " + curVersion);
                                     break;
                                 case "url":
                                     downloadUrl = reader.Value;
@@ -51,9 +56,12 @@ namespace SimpleLauncher
 
 
         }
+
+        //Checks XML file on server
         public void checkUpdate()
         {
             XmlTextReader reader = new XmlTextReader(xmlUrl);
+            Console.WriteLine("Got online XML");
             reader.MoveToContent();
             string elementName = "";
             if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
@@ -72,6 +80,8 @@ namespace SimpleLauncher
                             {
                                 case "version":
                                     newVersion = new Version(reader.Value);
+                                    newVerStr = reader.Value;
+                                    Console.WriteLine("newVersion: " + newVersion);
                                     break;
                                 case "url":
                                     newDownloadUrl = reader.Value;
@@ -82,20 +92,31 @@ namespace SimpleLauncher
                 }
             }
         }
+
+        //Puts it all together for one simple function
         public void update() 
         {
+            Console.WriteLine("Update Initialised");
             checkLocalVersion();
             checkUpdate();
-            if (newVersion.CompareTo(curVersion) < 0)
+            if (curVersion.CompareTo(newVersion) < 0)
             {
-                MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
+                DialogResult diagRes = MessageBox.Show("There's an update available, Would you like to update now?", "Update available", MessageBoxButtons.YesNo);
+                if (diagRes == DialogResult.Yes)
+                {
+                    Process.Start(newDownloadUrl);
+                    Console.WriteLine("Downloading...");
+                }
+                else if (diagRes == DialogResult.No)
+                {
+                    //Application.Exit();
+                }
             }
             else
             {
-                if ((MessageBox.Show("There is an update availabe, do you want to update now?", "Simple Launcher", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == (DialogResult.Yes))) ;
-                {
-                    Process.Start(newDownloadUrl);
-                }
+                MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
+                Console.WriteLine("App up to date");
+                
             }
 
         }
