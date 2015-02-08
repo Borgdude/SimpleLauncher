@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace SimpleLauncher
 {
@@ -79,6 +81,23 @@ namespace SimpleLauncher
                     }
                 }
             }
+        }
+        public void update() 
+        {
+            checkLocalVersion();
+            checkUpdate();
+            if (newVersion.CompareTo(curVersion) < 0)
+            {
+                MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
+            }
+            else
+            {
+                if ((MessageBox.Show("There is an update availabe, do you want to update now?", "Simple Launcher", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == (DialogResult.Yes))) ;
+                {
+                    Process.Start(newDownloadUrl);
+                }
+            }
+
         }
 
         

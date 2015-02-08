@@ -14,7 +14,6 @@ namespace SimpleLauncher
 {
     public partial class stuff : Form
     {
-
         updateChecker uc = new updateChecker();
 
         
@@ -31,17 +30,7 @@ namespace SimpleLauncher
 
         private void updateBtn_Click(object sender, EventArgs e)
         {
-            uc.checkLocalVersion();
-            uc.checkUpdate();
-            if (uc.newVersion.CompareTo(uc.curVersion) < 0) {
-                MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
-            }
-            else {
-                if ((MessageBox.Show("There is an update availabe, do you want to update now?", "Simple Launcher", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == (DialogResult.Yes)));
-                {
-                    Process.Start(uc.newDownloadUrl);
-                }
-            }
+            uc.update();
 
         }
 
