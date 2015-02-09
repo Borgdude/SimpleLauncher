@@ -19,77 +19,98 @@ namespace SimpleLauncher
         public Version newVersion = null;
         string newVerStr = "";
         string xmlUrl = "http://borgdude.github.io/update.xml";
+        bool localXmlFile = false;
 
-        //Checks local xml file
-        public void checkLocalVersion()
-        {
-            XmlTextReader reader = new XmlTextReader("test.xml");
-            Console.WriteLine("Get local XML");
-            reader.MoveToContent();
-            string elementName = "";
-            if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
-            {
-                while (reader.Read())
-                {
-                    if (reader.NodeType == XmlNodeType.Element)
-                    {
-                        elementName = reader.Name;
-                    }
-                    else
-                    {
-                        if ((reader.NodeType == XmlNodeType.Text) && (reader.HasValue))
-                        {
-                            switch (elementName)
-                            {
-                                case "version":
-                                    curVersion = new Version(reader.Value);
-                                    Console.WriteLine("curVersion: " + curVersion);
-                                    break;
-                                case "url":
-                                    downloadUrl = reader.Value;
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-
-
-        }
-
+       
         //Checks XML file on server
         public void checkUpdate()
         {
-            XmlTextReader reader = new XmlTextReader(xmlUrl);
-            Console.WriteLine("Got online XML");
-            reader.MoveToContent();
-            string elementName = "";
-            if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
-            {
-                while (reader.Read())
+           
+                XmlTextReader reader = new XmlTextReader(xmlUrl);
+                Console.WriteLine("Got online XML");
+                reader.MoveToContent();
+                string elementName = "";
+                if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
                 {
-                    if (reader.NodeType == XmlNodeType.Element)
+                    while (reader.Read())
                     {
-                        elementName = reader.Name;
-                    }
-                    else
-                    {
-                        if ((reader.NodeType == XmlNodeType.Text) && (reader.HasValue))
+                        if (reader.NodeType == XmlNodeType.Element)
                         {
-                            switch (elementName)
+                            elementName = reader.Name;
+                        }
+                        else
+                        {
+                            if ((reader.NodeType == XmlNodeType.Text) && (reader.HasValue))
                             {
-                                case "version":
-                                    newVersion = new Version(reader.Value);
-                                    newVerStr = reader.Value;
-                                    Console.WriteLine("newVersion: " + newVersion);
-                                    break;
-                                case "url":
-                                    newDownloadUrl = reader.Value;
-                                    break;
+                                switch (elementName)
+                                {
+                                    case "version":
+                                        newVersion = new Version(reader.Value);
+                                        newVerStr = reader.Value;
+                                        Console.WriteLine("newVersion: " + newVersion);
+                                        break;
+                                    case "url":
+                                        newDownloadUrl = reader.Value;
+                                        break;
+                                }
                             }
                         }
                     }
                 }
+
+        }
+        //Checks local xml file
+        public void checkLocalVersion()
+        {
+            
+                XmlTextReader reader = new XmlTextReader("test.xml");
+                Console.WriteLine("Got local XML");
+                reader.MoveToContent();
+                string elementName = "";
+                if ((reader.NodeType == XmlNodeType.Element) && reader.Name == "app")
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == XmlNodeType.Element)
+                        {
+                            elementName = reader.Name;
+                        }
+                        else
+                        {
+                            if ((reader.NodeType == XmlNodeType.Text) && (reader.HasValue))
+                            {
+                                switch (elementName)
+                                {
+                                    case "version":
+                                        curVersion = new Version(reader.Value);
+                                        Console.WriteLine("curVersion: " + curVersion);
+                                        break;
+                                    case "url":
+                                        downloadUrl = reader.Value;
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+        }
+
+        public void checkLocalXml()
+        {
+            if(File.Exists("test.xml"))
+            {
+                localXmlFile = true;
+                checkLocalVersion();
+
+            }
+            else
+            {
+                localXmlFile = false;
+                MessageBox.Show("XML File not found, created one", "XML File Not Found");
+                checkUpdate();
+                xmlC.createXml(newVerStr, newDownloadUrl);
+
             }
         }
 
@@ -97,31 +118,39 @@ namespace SimpleLauncher
         public void update() 
         {
             Console.WriteLine("Update Initialised");
-            checkLocalVersion();
-            checkUpdate();
-            if (curVersion.CompareTo(newVersion) < 0)
+            checkLocalXml();
+            if (localXmlFile)
             {
-                DialogResult diagRes = MessageBox.Show("There's an update available, Would you like to update now?", "Update available", MessageBoxButtons.YesNo);
-                if (diagRes == DialogResult.Yes)
+                checkUpdate();
+                if (curVersion.CompareTo(newVersion) < 0)
                 {
-                    Process.Start(newDownloadUrl);
-                    Console.WriteLine("Downloading...");
+                    DialogResult diagRes = MessageBox.Show("There's an update available, Would you like to update now?", "Update available", MessageBoxButtons.YesNo);
+                    if (diagRes == DialogResult.Yes)
+                    {
+                        Process.Start(newDownloadUrl);
+                        Console.WriteLine("Downloading...");
+                    }
+                    else if (diagRes == DialogResult.No)
+                    {
+                        //Application.Exit();
+                    }
                 }
-                else if (diagRes == DialogResult.No)
+                else
                 {
-                    //Application.Exit();
+                    MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
+                    Console.WriteLine("App up to date");
+
                 }
             }
             else
             {
-                MessageBox.Show("No update available", "Simple Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk);
-                Console.WriteLine("App up to date");
-                
+
             }
 
+        }
         }
 
         
        
     }
-}
+

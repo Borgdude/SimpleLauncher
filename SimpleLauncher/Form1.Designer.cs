@@ -46,7 +46,7 @@
             // startBtn
             // 
             this.startBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.startBtn.ForeColor = System.Drawing.Color.Black;
             this.startBtn.Location = new System.Drawing.Point(78, 117);
             this.startBtn.Name = "startBtn";
             this.startBtn.Size = new System.Drawing.Size(127, 23);
@@ -70,11 +70,19 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Controls.Add(this.updateBtn);
             this.Controls.Add(this.startBtn);
             this.Controls.Add(this.label1);
+            this.ForeColor = System.Drawing.Color.Black;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(300, 300);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(300, 300);
             this.Name = "stuff";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Simple Launcher";
             this.ResumeLayout(false);
             this.PerformLayout();
